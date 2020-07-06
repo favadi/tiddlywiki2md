@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -29,30 +30,7 @@ func (n *Note) Write(out string) error {
 		return nil
 	}
 
-	f, err := os.Create(filepath.Join(out, n.fileName()))
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		_ = f.Close()
-	}()
-
-	if _, err = f.Write([]byte(n.Title + "\n")); err != nil {
-		return err
-	}
-	if _, err = f.Write([]byte(strings.Repeat("#", len(n.Title)) + "\n")); err != nil {
-		return err
-	}
-	if _, err = f.Write([]byte("\n")); err != nil {
-		return err
-	}
-
-	if _, err = f.Write([]byte(n.Text)); err != nil {
-		return err
-	}
-
-	return f.Close()
+	return ioutil.WriteFile(filepath.Join(out, n.fileName()), []byte(n.Text), 0644)
 }
 
 func main() {
